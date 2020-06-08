@@ -63,7 +63,7 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   res.code(200);
 });
 // Run the server!
-server.listen(80, function(err, address) {
+server.listen(80, '0.0.0.0', function(err, address) {
   if (err) {
     server.log.error(err);
     process.exit(1);
