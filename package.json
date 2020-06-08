@@ -27,12 +27,12 @@
     "nodemon": "^2.0.4",
     "onchange": "^6.1.0",
     "prettier": "^1.19.1",
-    "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.2",
     "typescript": "^3.9.5"
   },
   "dependencies": {
+    "rimraf": "^3.0.2",
     "@mberrg/regatta": "^0.0.1",
     "@types/ws": "^7.2.5",
     "fastify": "^2.14.1",
