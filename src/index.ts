@@ -36,7 +36,8 @@ const server: fastify.FastifyInstance<
 > = fastify({});
 
 server.register(fastifycors, {
-  origin: ['http://localhost:8080', 'https://regattastart.herokuapp.com/'],
+  origin: ['http://localhost:8080', 'https://regattastart.herokuapp.com'],
+  methods: 'GET,POST,DELETE',
 });
 
 server.register(fastifystatic, {
