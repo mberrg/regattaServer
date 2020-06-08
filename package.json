@@ -5,6 +5,9 @@
   "author": "",
   "license": "MIT",
   "main": "index.js",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "build": "rimraf ./build && tsc",
     "start:dev": "nodemon",
