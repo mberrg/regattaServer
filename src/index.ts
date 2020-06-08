@@ -60,8 +60,8 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
       client.send(JSON.stringify(counterState));
     }
   });
-
-  res.code(200);
+  console.log('Sending all ok');
+  res.code(200).send({ status: true });
 });
 // Run the server!
 const PORT = parseInt(process.env.PORT ?? '80');
