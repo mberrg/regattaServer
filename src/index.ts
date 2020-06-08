@@ -40,7 +40,7 @@ server.register(fastifycors, {
 });
 
 server.register(fastifystatic, {
-  root: resolve(__dirname, '../node_modules/regatta/dist/pwa'),
+  root: resolve(__dirname, '../node_modules/@mberrg/regatta/dist/pwa'),
   prefix: '/', // optional: default '/'
 });
 server.register(fastifysocket);
