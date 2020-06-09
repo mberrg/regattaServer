@@ -9,21 +9,15 @@ import WebSocket from 'ws';
 interface CounterState {
   startTimeMs: number;
   delayMinutesBetweenHeats: number;
-  nextHeat: number;
   numHeats: number;
-  currentHeat: number;
   started: boolean;
-  finnished: boolean;
 }
 
-let counterState: CounterState = {
+const counterState: CounterState = {
   startTimeMs: new Date(0).valueOf(),
-  nextHeat: 0,
   delayMinutesBetweenHeats: 15,
   numHeats: 3,
-  currentHeat: 0,
   started: false,
-  finnished: false,
 };
 
 // Create a http server. We pass the relevant typings for our http version used.
@@ -52,7 +46,21 @@ server.get('/ws', { websocket: true }, (connection, req) => {
 
 server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   console.log(`Got new state ${req.body}`);
-  counterState = req.body as CounterState; // TODO verify data
+  if (
+    !req.body ||
+    !req.body.startTimeMs ||
+    !req.body.delayMinutesBetweenHeats ||
+    !req.body.numHeats
+  ) {
+    res.code(400).send({ status: false });
+    return;
+  }
+  counterState.startTimeMs = parseInt(req.body.startTimeMs);
+  counterState.delayMinutesBetweenHeats = parseInt(
+    req.body.delayMinutesBetweenHeats,
+  );
+  counterState.numHeats = parseInt(req.body.numHeats);
+  counterState.started = true;
 
   server.websocketServer.clients.forEach(function each(client) {
     console.log('Sending new state to client');
