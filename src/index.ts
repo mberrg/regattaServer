@@ -71,6 +71,25 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   console.log('Sending all ok');
   res.code(200).send({ status: true });
 });
+
+server.post('/reset', {}, async (req, res) => {
+  console.log(`Got reset`);
+
+  counterState.startTimeMs = 0;
+  counterState.delayMinutesBetweenHeats = 15;
+  counterState.numHeats = 3;
+  counterState.started = false;
+
+  server.websocketServer.clients.forEach(function each(client) {
+    console.log('Sending new state to client');
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(counterState));
+    }
+  });
+  console.log('Sending all ok');
+  res.code(200).send({ status: true });
+});
+
 // Run the server!
 const PORT = parseInt(process.env.PORT ?? '80');
 server.listen(PORT, '0.0.0.0', function(err, address) {
