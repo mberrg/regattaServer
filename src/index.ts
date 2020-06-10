@@ -9,7 +9,7 @@ import { resolve } from 'path';
 import WebSocket from 'ws';
 
 interface CounterState {
-  now: number;
+  serverNow: number;
   startTimeMs: number;
   delayMinutesBetweenHeats: number;
   numHeats: number;
@@ -17,7 +17,7 @@ interface CounterState {
 }
 
 const counterState: CounterState = {
-  now: Date.now(),
+  serverNow: Date.now(),
   startTimeMs: new Date(0).valueOf(),
   delayMinutesBetweenHeats: 15,
   numHeats: 3,
@@ -57,7 +57,9 @@ server.register(fastifystatic, {
 // Web sockets
 server.register(fastifysocket);
 server.get('/ws', { websocket: true }, (connection, req) => {
-  connection.socket.send(JSON.stringify({ ...counterState, now: Date.now() }));
+  connection.socket.send(
+    JSON.stringify({ ...counterState, serverNow: Date.now() }),
+  );
   console.log(`# Clients connected: ${server.websocketServer.clients.size}`);
 });
 
@@ -83,7 +85,7 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   server.websocketServer.clients.forEach(function each(client) {
     console.log('Sending new state to client');
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ ...counterState, now: Date.now() }));
+      client.send(JSON.stringify({ ...counterState, serverNow: Date.now() }));
     }
   });
   console.log('Sending all ok');
@@ -102,7 +104,7 @@ server.post('/reset', {}, async (req, res) => {
   server.websocketServer.clients.forEach(function each(client) {
     console.log('Sending new state to client');
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ ...counterState, now: Date.now() }));
+      client.send(JSON.stringify({ ...counterState, serverNow: Date.now() }));
     }
   });
   console.log('Sending all ok');
