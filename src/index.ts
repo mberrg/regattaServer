@@ -2,6 +2,8 @@ import fastify from 'fastify';
 import fastifystatic from 'fastify-static';
 import fastifysocket from 'fastify-websocket';
 import fastifycors from 'fastify-cors';
+import fastifycompress from 'fastify-compress';
+import fastifycache from 'fastify-caching';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 import { resolve } from 'path';
 import WebSocket from 'ws';
@@ -29,21 +31,35 @@ const server: fastify.FastifyInstance<
   ServerResponse
 > = fastify({});
 
+// Endable gzip on all res larger than 1024 bytes
+server.register(fastifycompress, {
+  global: true,
+  threshold: 1024,
+});
+
+// Default no cache
+server.register(fastifycache, { privacy: fastifycache.privacy.NOCACHE });
+
+// Enable cors
 server.register(fastifycors, {
   origin: ['http://localhost:8080', 'https://regattastart.herokuapp.com'],
   methods: 'GET,POST,DELETE',
 });
 
+// Serve static files (PWA APP)
 server.register(fastifystatic, {
   root: resolve(__dirname, '../node_modules/@mberrg/regatta/dist/pwa'),
   prefix: '/', // optional: default '/'
 });
+
+// Web sockets
 server.register(fastifysocket);
 server.get('/ws', { websocket: true }, (connection, req) => {
   connection.socket.send(JSON.stringify(counterState));
   console.log(`# Clients connected: ${server.websocketServer.clients.size}`);
 });
 
+// Configure path
 server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   console.log(`Got new state ${req.body}`);
   if (
@@ -72,6 +88,7 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   res.code(200).send({ status: true });
 });
 
+// Reset settings / counter
 server.post('/reset', {}, async (req, res) => {
   console.log(`Got reset`);
 
