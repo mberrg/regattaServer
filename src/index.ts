@@ -57,7 +57,7 @@ server.register(fastifystatic, {
 // Web sockets
 server.register(fastifysocket);
 server.get('/ws', { websocket: true }, (connection, req) => {
-  connection.socket.send(JSON.stringify(counterState));
+  connection.socket.send(JSON.stringify({ ...counterState, now: Date.now() }));
   console.log(`# Clients connected: ${server.websocketServer.clients.size}`);
 });
 
