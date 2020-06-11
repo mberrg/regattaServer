@@ -4,6 +4,7 @@ import fastifysocket from 'fastify-websocket';
 import fastifycors from 'fastify-cors';
 import fastifycompress from 'fastify-compress';
 import fastifycache from 'fastify-caching';
+import fastifyhelmet from 'fastify-helmet';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 import { resolve } from 'path';
 import WebSocket from 'ws';
@@ -32,6 +33,9 @@ const server: fastify.FastifyInstance<
   IncomingMessage,
   ServerResponse
 > = fastify({});
+
+// Default security settings
+server.register(fastifyhelmet);
 
 // Endable gzip on all res larger than 1024 bytes
 server.register(fastifycompress, {
