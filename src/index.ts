@@ -19,7 +19,7 @@ interface CounterState {
 const counterState: CounterState = {
   serverNow: Date.now(),
   startTimeMs: new Date(0).valueOf(),
-  delayMinutesBetweenHeats: 15,
+  delayMinutesBetweenHeats: 5,
   numHeats: 3,
   started: false,
 };
