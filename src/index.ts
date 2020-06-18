@@ -51,11 +51,12 @@ server.register(fastifycompress, {
 });
 
 // Default no cache
+/*
 server.register(fastifycache, {
   privacy: fastifycache.privacy.NOCACHE,
   expiresIn: 300,
 });
-
+*/
 // Enable cors
 server.register(fastifycors, {
   origin: ['http://localhost:8080', 'https://regattastart.herokuapp.com'],
