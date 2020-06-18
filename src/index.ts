@@ -15,6 +15,7 @@ interface CounterState {
   delayMinutesBetweenHeats: number;
   numHeats: number;
   started: boolean;
+  password: string;
 }
 
 const counterState: CounterState = {
@@ -23,6 +24,7 @@ const counterState: CounterState = {
   delayMinutesBetweenHeats: 5,
   numHeats: 3,
   started: false,
+  password: 'bounty',
 };
 
 // Create a http server. We pass the relevant typings for our http version used.
@@ -70,6 +72,11 @@ server.get('/ws', { websocket: true }, (connection, req) => {
 // Configure path
 server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   console.log(`Got new state ${req.body}`);
+
+  if (req.body.password !== counterState.password) {
+    res.code(401).send({ error: 'access denied' });
+    return;
+  }
   if (
     !req.body ||
     !req.body.startTimeMs ||
@@ -79,6 +86,7 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
     res.code(400).send({ status: false });
     return;
   }
+
   counterState.startTimeMs = parseInt(req.body.startTimeMs);
   counterState.delayMinutesBetweenHeats = parseInt(
     req.body.delayMinutesBetweenHeats,
