@@ -46,7 +46,10 @@ server.register(fastifycompress, {
 });
 
 // Default no cache
-server.register(fastifycache, { privacy: fastifycache.privacy.NOCACHE });
+server.register(fastifycache, {
+  privacy: fastifycache.privacy.NOCACHE,
+  expiresIn: 300,
+});
 
 // Enable cors
 server.register(fastifycors, {
