@@ -61,6 +61,8 @@ server.register(fastifycors, {
 server.register(fastifystatic, {
   root: resolve(__dirname, '../node_modules/@mberrg/regatta/dist/pwa'),
   prefix: '/', // optional: default '/'
+  maxAge: 300,
+  lastModified: false,
 });
 
 // Web sockets
