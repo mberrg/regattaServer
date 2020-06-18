@@ -17,7 +17,6 @@ interface CounterState {
   delayMinutesBetweenHeats: number;
   numHeats: number;
   started: boolean;
-  password: string;
 }
 
 const counterState: CounterState = {
@@ -26,8 +25,9 @@ const counterState: CounterState = {
   delayMinutesBetweenHeats: 5,
   numHeats: 3,
   started: false,
-  password: 'bounty',
 };
+
+const SECRET = 'bounty';
 
 // Create a http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.
@@ -84,7 +84,7 @@ server.get('/ws', { websocket: true }, (connection, req) => {
 server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   console.log(`Got new state ${req.body}`);
 
-  if (req.body.password !== counterState.password) {
+  if (req.body.password !== SECRET) {
     res.code(401).send({ error: 'access denied' });
     return;
   }
