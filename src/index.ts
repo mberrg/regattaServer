@@ -6,6 +6,7 @@ import fastifycompress from 'fastify-compress';
 import fastifycache from 'fastify-caching';
 import fastifyhelmet from 'fastify-helmet';
 import fastifyetag from 'fastify-etag';
+import redis from 'redis';
 
 import { Server, IncomingMessage, ServerResponse } from 'http';
 import { resolve } from 'path';
@@ -19,7 +20,7 @@ interface CounterState {
   started: boolean;
 }
 
-const counterState: CounterState = {
+let counterState: CounterState = {
   serverNow: Date.now(),
   startTimeMs: new Date(0).valueOf(),
   delayMinutesBetweenHeats: 5,
@@ -27,6 +28,23 @@ const counterState: CounterState = {
   started: false,
 };
 
+let client: undefined | redis.RedisClient;
+
+if (process.env.REDISCLOUD_URL) {
+  console.log(process.env.REDISCLOUD_URL);
+
+  try {
+    client = redis.createClient(process.env.REDISCLOUD_URL, {
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      no_ready_check: true,
+    });
+    client.get('counterState', (err, reply) => {
+      if (reply) counterState = JSON.parse(reply) as CounterState;
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
 const SECRET = 'bounty';
 
 // Create a http server. We pass the relevant typings for our http version used.
@@ -104,6 +122,13 @@ server.post<{ Body: CounterState }>('/newState', {}, async (req, res) => {
   );
   counterState.numHeats = parseInt(req.body.numHeats);
   counterState.started = true;
+
+  if (client)
+    try {
+      client.set('counterState', JSON.stringify(counterState));
+    } catch (err) {
+      console.error(err);
+    }
 
   server.websocketServer.clients.forEach(function each(client) {
     console.log('Sending new state to client');
