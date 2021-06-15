@@ -44,8 +44,10 @@ if (process.env.REDISCLOUD_URL) {
   } catch (err) {
     console.error(err);
   }
+} else {
+  console.log('Did not find a REDIS token');
 }
-const SECRET = 'bounty';
+const SECRET = process.env.ADMIN_PASSWORD as string;
 
 // Create a http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.
